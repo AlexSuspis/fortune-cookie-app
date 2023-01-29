@@ -100,9 +100,9 @@ resource "aws_security_group" "web-sg" {
 output "web-address" {
   value = "${aws_instance.web.public_dns}:8080"
 }
-output "instance_id" {
-  value = aws_instance.web.instance_id
-}
+# output "instance_id" {
+#   value = aws_instance.web.instance_id
+# }
 # output "ssh-key" {
 #   value = tls_private_key.example.private_key_pem
 # }
