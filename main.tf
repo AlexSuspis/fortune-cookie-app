@@ -26,6 +26,17 @@ provider "aws" {
 
 resource "random_pet" "sg" {}
 
+# Key generation
+variable "key_name" {}
+resource "tls_private_key" "key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+resource "aws_key_pair" "generated_key" {
+  key_name   = var.key_name
+  public_key = tls_private_key.key.public_key_openssh
+}
+
 data "aws_ami" "ubuntu" {
   most_recent = true
 
@@ -42,13 +53,10 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-resource "aws_key_pair" "deployer" {
-  key_name   = "deployer-key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC73EuM9lAi1LBeAWiwZjCem3BjCIf04rRp3RPYixLCl8rDU2QAMjuJ99pYUcoKLqHvaLrxCLm4STo68BzowuXsakDaY3qTEmQcHPZ68Yxfg/pS4gmxlHIoACKxcllWdgS32/61hRTZ1EdOVL0a9WjFntIAhmZtieHkoKbSs3Ofna7j/uBdRz+nKvqfuMbpWq6SS2f8U3RTOV4QqOCm4P/e+jdDklIQRv3g9EtTu69jTZEDUfPnGbaj81nA6TNTuWG21K7Nh0gE0V0cPk1xz5RUVuVtkxVgpdenIZYaAkRJ0p41ucM/OZPFRTx44fma/CJ8QUkgpSNChYVxPTeKM857 alex@Alexandres-Air.home"
-}
 resource "aws_instance" "web" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = "t2.micro"
+  key_name               = aws_key_pair.generated_key.key_name
   vpc_security_group_ids = [aws_security_group.web-sg.id]
 
   #   user_data = <<-EOF
@@ -67,7 +75,7 @@ resource "aws_instance" "web" {
       type = "ssh"
       user = "ubuntu"
       #   private_key = file("/Users/alex/iCloud/coding/fortune-cookie-app/ssh-private-key.pem")
-      private_key = aws_key_pair.deployer.public_key
+      private_key = tls_private_key.key.private_key_pem
       host        = self.public_ip
     }
   }
