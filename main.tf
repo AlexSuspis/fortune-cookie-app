@@ -77,21 +77,52 @@ resource "aws_security_group" "web-sg" {
   }
 }
 
-## Creating Launch Configuration
-resource "aws_launch_configuration" "example" {
-  image_id        = lookup(var.amis, var.region)
+resource "aws_launch_template" "app" {
+  name_prefix     = "app"
+  ami             = data.aws_ami.ubuntu.id
+  image_id        = ""
   instance_type   = "t2.micro"
-  security_groups = ["${aws_security_group.web-sg.id}"]
-  key_name        = var.key_name
+  security_groups = aws_security_group.web-sg.id
   user_data       = <<-EOF
-              #!/bin/bash
-              echo "Hello, World" > index.html
-              nohup busybox httpd -f -p 8080 &
-              EOF
-  lifecycle {
-    create_before_destroy = true
+                #!/bin/bash
+                apt-get update
+                apt-get install -y apache2
+                sed -i -e 's/80/8080/' /etc/apache2/ports.conf
+                echo "<h1>Fortune cookie app coming soon!</h1>" > /var/www/html/index.html
+                systemctl restart apache2
+                EOF
+}
+
+resource "aws_autoscaling_group" "bar" {
+  availability_zones = ["us-east-1a"]
+  desired_capacity   = 1
+  max_size           = 1
+  min_size           = 1
+  load_balancers     = aws_elb.example.name
+
+  launch_template {
+    id      = aws_launch_template.app.id
+    version = "$Latest"
   }
-} ## Creating AutoScaling Group
+}
+
+
+# ## Creating Launch Configuration
+# resource "aws_launch_configuration" "example" {
+#   image_id        = lookup(var.amis, var.region)
+#   instance_type   = "t2.micro"
+#   security_groups = ["${aws_security_group.web-sg.id}"]
+#   key_name        = var.key_name
+#   user_data       = <<-EOF
+#               #!/bin/bash
+#               echo "Hello, World" > index.html
+#               nohup busybox httpd -f -p 8080 &
+#               EOF
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+# } 
+## Creating AutoScaling Group
 resource "aws_autoscaling_group" "example" {
   launch_configuration = aws_launch_configuration.example.id
   availability_zones   = ["${data.aws_availability_zones.all.names}"]
