@@ -27,13 +27,13 @@ provider "aws" {
 resource "random_pet" "sg" {}
 
 # Key generation
-resource "tls_private_key" "key" {
+resource "tls_private_key" "example" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 resource "aws_key_pair" "generated_key" {
   key_name   = "key_name"
-  public_key = tls_private_key.key.public_key_openssh
+  public_key = tls_private_key.example.public_key_openssh
 }
 
 data "aws_ami" "ubuntu" {
@@ -66,18 +66,18 @@ resource "aws_instance" "web" {
                 echo "Hello World" > /var/www/html/index.html
                 systemctl restart apache2
                 EOF
-  #   provisioner "file" {
-  #     source      = "index.html"
-  #     destination = "/var/www/html/index.html"
 
-  #     connection {
-  #       type = "ssh"
-  #       user = "ubuntu"
-  #       #   private_key = file("/Users/alex/iCloud/coding/fortune-cookie-app/ssh-private-key.pem")
-  #       private_key = tls_private_key.key.private_key_pem
-  #       host        = self.public_ip
-  #     }
-  #   }
+  connection {
+    type = "ssh"
+    user = "ubuntu"
+    # private_key = file("${path.module}/id_rsa")
+    private_key = tls_private_key.example.private_key_pem
+    host        = self.public_ip
+  }
+  provisioner "file" {
+    source      = "/Users/alex/iCloud/coding/fortune-cookie-app/index.html"
+    destination = "/var/www/html/index.html"
+  }
 }
 
 resource "aws_security_group" "web-sg" {
@@ -100,3 +100,9 @@ resource "aws_security_group" "web-sg" {
 output "web-address" {
   value = "${aws_instance.web.public_dns}:8080"
 }
+output "instance_id" {
+  value = aws_instance.web.instance_id
+}
+# output "ssh-key" {
+#   value = tls_private_key.example.private_key_pem
+# }
