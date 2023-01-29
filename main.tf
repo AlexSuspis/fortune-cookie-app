@@ -93,47 +93,35 @@ resource "aws_launch_template" "app" {
                 EOF
 }
 
-resource "aws_autoscaling_group" "bar" {
-  availability_zones = ["us-east-1a"]
-  desired_capacity   = 1
-  max_size           = 1
-  min_size           = 1
-  load_balancers     = aws_elb.example.name
+# resource "aws_autoscaling_group" "bar" {
+#   availability_zones = ["us-east-1a"]
+#   desired_capacity   = 1
+#   max_size           = 1
+#   min_size           = 1
+#   load_balancers     = aws_elb.example.name
 
+#   launch_template {
+#     id      = aws_launch_template.app.id
+#     version = "$Latest"
+#   }
+# }
+
+## Creating AutoScaling Group
+resource "aws_autoscaling_group" "example" {
+  availability_zones = ["us-west-1", "us-east-1"]
+  desired_capacity   = 1
+  min_size           = 1
+  max_size           = 5
+  load_balancers     = aws_elb.example.name
+  #   health_check_type  = "ELB"
+  #   tag {
+  #     key                 = "Name"
+  #     value               = "terraform-asg-example"
+  #     propagate_at_launch = true
+  #   }
   launch_template {
     id      = aws_launch_template.app.id
     version = "$Latest"
-  }
-}
-
-
-# ## Creating Launch Configuration
-# resource "aws_launch_configuration" "example" {
-#   image_id        = lookup(var.amis, var.region)
-#   instance_type   = "t2.micro"
-#   security_groups = ["${aws_security_group.web-sg.id}"]
-#   key_name        = var.key_name
-#   user_data       = <<-EOF
-#               #!/bin/bash
-#               echo "Hello, World" > index.html
-#               nohup busybox httpd -f -p 8080 &
-#               EOF
-#   lifecycle {
-#     create_before_destroy = true
-#   }
-# } 
-## Creating AutoScaling Group
-resource "aws_autoscaling_group" "example" {
-  launch_configuration = aws_launch_configuration.example.id
-  availability_zones   = ["${data.aws_availability_zones.all.names}"]
-  min_size             = 1
-  max_size             = 5
-  load_balancers       = ["${aws_elb.example.name}"]
-  health_check_type    = "ELB"
-  tag {
-    key                 = "Name"
-    value               = "terraform-asg-example"
-    propagate_at_launch = true
   }
 } ## Security Group for ELB
 resource "aws_security_group" "elb" {
