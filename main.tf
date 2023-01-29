@@ -82,7 +82,7 @@ resource "aws_launch_template" "app" {
   image_id      = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
   #   security_groups = aws_security_group.web-sg.id
-  user_data = <<-EOF
+  user_data = <<EOF
                 #!/bin/bash
                 apt-get update
                 apt-get install -y apache2
