@@ -78,12 +78,12 @@ resource "aws_security_group" "web-sg" {
 }
 
 resource "aws_launch_template" "app" {
-  name_prefix     = "app"
-  ami             = data.aws_ami.ubuntu.id
-  image_id        = ""
-  instance_type   = "t2.micro"
-  security_groups = aws_security_group.web-sg.id
-  user_data       = <<-EOF
+  name_prefix   = "app"
+  ami           = data.aws_ami.ubuntu.id
+  image_id      = ""
+  instance_type = "t2.micro"
+  #   security_groups = aws_security_group.web-sg.id
+  user_data = <<-EOF
                 #!/bin/bash
                 apt-get update
                 apt-get install -y apache2
