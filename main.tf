@@ -79,8 +79,7 @@ resource "aws_security_group" "web-sg" {
 
 resource "aws_launch_template" "app" {
   name_prefix   = "app"
-  ami           = data.aws_ami.ubuntu.id
-  image_id      = ""
+  image_id      = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
   #   security_groups = aws_security_group.web-sg.id
   user_data = <<-EOF
@@ -93,18 +92,6 @@ resource "aws_launch_template" "app" {
                 EOF
 }
 
-# resource "aws_autoscaling_group" "bar" {
-#   availability_zones = ["us-east-1a"]
-#   desired_capacity   = 1
-#   max_size           = 1
-#   min_size           = 1
-#   load_balancers     = aws_elb.example.name
-
-#   launch_template {
-#     id      = aws_launch_template.app.id
-#     version = "$Latest"
-#   }
-# }
 
 ## Creating AutoScaling Group
 resource "aws_autoscaling_group" "example" {
