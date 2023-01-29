@@ -75,7 +75,8 @@ resource "aws_instance" "web" {
     host        = self.public_ip
   }
   provisioner "file" {
-    source      = "/Users/alex/iCloud/coding/fortune-cookie-app/index.html"
+    # source      = "/Users/alex/iCloud/coding/fortune-cookie-app/index.html"
+    source      = "index.html"
     destination = "/var/www/html/index.html"
   }
 }
