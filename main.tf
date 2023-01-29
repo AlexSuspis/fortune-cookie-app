@@ -62,7 +62,7 @@ resource "aws_instance" "web" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      private_key = file("ssh-private-key.pem")
+      private_key = file("/Users/alex/iCloud/coding/fortune-cookie-app/ssh-private-key.pem")
       host        = self.public_ip
     }
   }
