@@ -82,14 +82,14 @@ resource "aws_launch_template" "app" {
   image_id      = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
   #   security_groups = aws_security_group.web-sg.id
-  user_data = <<EOF
+  user_data = filebase64(<<-EOF
                 #!/bin/bash
                 apt-get update
                 apt-get install -y apache2
                 sed -i -e 's/80/8080/' /etc/apache2/ports.conf
                 echo "<h1>Fortune cookie app coming soon!</h1>" > /var/www/html/index.html
                 systemctl restart apache2
-                EOF
+                EOF)
 }
 
 
