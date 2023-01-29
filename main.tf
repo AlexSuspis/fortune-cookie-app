@@ -99,13 +99,7 @@ resource "aws_autoscaling_group" "example" {
   desired_capacity   = 1
   min_size           = 1
   max_size           = 5
-  load_balancers     = aws_elb.example.name
-  #   health_check_type  = "ELB"
-  #   tag {
-  #     key                 = "Name"
-  #     value               = "terraform-asg-example"
-  #     propagate_at_launch = true
-  #   }
+  load_balancers     = ["aws_elb.example.name"]
   launch_template {
     id      = aws_launch_template.app.id
     version = "$Latest"
