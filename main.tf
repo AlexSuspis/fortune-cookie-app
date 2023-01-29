@@ -91,7 +91,7 @@ resource "aws_autoscaling_group" "example" {
   desired_capacity   = 1
   min_size           = 1
   max_size           = 5
-  target_group_arns  = ["${module.alb.target_group_arn}"]
+  target_group_arns  = ["${resource.aws_elb.target_group_arn}"]
   launch_template {
     id      = aws_launch_template.app.id
     version = "$Latest"
