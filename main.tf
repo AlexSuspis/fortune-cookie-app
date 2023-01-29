@@ -24,7 +24,7 @@ provider "aws" {
   region = "us-west-2"
 }
 
-data "aws_availability_zones" "all" {}
+data "aws_availability_zones" "available" {}
 resource "random_pet" "sg" {}
 
 data "aws_ami" "ubuntu" {
