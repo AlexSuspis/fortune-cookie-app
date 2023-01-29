@@ -95,7 +95,7 @@ resource "aws_launch_template" "app" {
 
 ## Creating AutoScaling Group
 resource "aws_autoscaling_group" "example" {
-  availability_zones = ["us-west-1", "us-east-1"]
+  availability_zones = data.aws_availability_zones.available.names
   desired_capacity   = 1
   min_size           = 1
   max_size           = 5
@@ -123,7 +123,7 @@ resource "aws_security_group" "elb" {
 resource "aws_elb" "example" {
   name               = "terraform-asg-example"
   security_groups    = ["${aws_security_group.elb.id}"]
-  availability_zones = ["us-west-1", "us-east-1"]
+  availability_zones = data.aws_availability_zones.available.names
   health_check {
     healthy_threshold   = 2
     unhealthy_threshold = 2
