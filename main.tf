@@ -81,7 +81,7 @@ resource "aws_security_group" "web-sg" {
 resource "aws_launch_configuration" "example" {
   image_id        = lookup(var.amis, var.region)
   instance_type   = "t2.micro"
-  security_groups = ["${aws_security_group.instance.id}"]
+  security_groups = ["${aws_security_group.web-sg.id}"]
   key_name        = var.key_name
   user_data       = <<-EOF
               #!/bin/bash
