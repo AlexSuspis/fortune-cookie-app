@@ -69,3 +69,6 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false 
+
+      - name: Save private SSH key locally
+        run: terraform output -raw ssh-private-key > key.pem
