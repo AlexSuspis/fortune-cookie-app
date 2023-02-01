@@ -52,16 +52,6 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-# resource "aws_instance" "web" {
-#   ami                    = data.aws_ami.ubuntu.id
-#   instance_type          = "t2.micro"
-#   key_name               = aws_key_pair.deployer.key_name
-#   vpc_security_group_ids = [aws_security_group.instance.id]
-# }
-
-
-
-
 resource "aws_launch_template" "app" {
   name_prefix            = "app"
   image_id               = data.aws_ami.ubuntu.id
@@ -69,20 +59,6 @@ resource "aws_launch_template" "app" {
   key_name               = aws_key_pair.generated-key.key_name
   user_data              = filebase64("ec2-setup.sh")
   vpc_security_group_ids = ["${aws_security_group.instance.id}", "${aws_security_group.ssh.id}"]
-
-  # provisioner "remote-exec" {
-  #   inline = [
-  #     "touch hello.txt",
-  #     "echo helloworld remote provisioner >> hello.txt",
-  #   ]
-  # }
-  # connection {
-  #   type        = "ssh"
-  #   host        = aws_instance.web.public_ip
-  #   user        = "ubuntu"
-  #   private_key = file(var.ssh-private-key-path)
-  #   timeout     = "4m"
-  # }
 }
 resource "aws_security_group" "instance" {
   name = "instance-security-group"
@@ -118,7 +94,7 @@ resource "aws_autoscaling_group" "example" {
 ### Creating ELB
 resource "aws_elb" "elb" {
   name               = "elb"
-  security_groups    = ["${aws_security_group.elb.id}", "${aws_security_group.ssh.id}"]
+  security_groups    = ["${aws_security_group.elb-ssh.id}"]
   availability_zones = data.aws_availability_zones.available.names
   health_check {
     healthy_threshold   = 2
@@ -134,26 +110,10 @@ resource "aws_elb" "elb" {
     instance_protocol = "http"
   }
 }
-## Security Group for ELB
-resource "aws_security_group" "elb" {
+## Security Group for ELB + SSH connection
+resource "aws_security_group" "elb-ssh" {
   name = "elb_security_group"
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
   ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-## Security Group for SSH connection
-resource "aws_security_group" "ssh" {
-  name = "ssh-security-group"
-  egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -163,6 +123,12 @@ resource "aws_security_group" "ssh" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
