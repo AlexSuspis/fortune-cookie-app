@@ -146,7 +146,7 @@ resource "aws_security_group" "elb" {
   ingress {
     from_port   = 8080
     to_port     = 80
-    protocol    = "http"
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
