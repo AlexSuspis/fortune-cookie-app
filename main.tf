@@ -58,7 +58,7 @@ resource "aws_launch_template" "app" {
   instance_type          = "t2.micro"
   key_name               = aws_key_pair.generated-key.key_name
   user_data              = filebase64("ec2-setup.sh")
-  vpc_security_group_ids = ["${aws_security_group.instance.id}", "${aws_security_group.ssh.id}"]
+  vpc_security_group_ids = ["${aws_security_group.instance.id}"]
 }
 resource "aws_security_group" "instance" {
   name = "instance-security-group"
