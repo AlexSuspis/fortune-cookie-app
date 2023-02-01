@@ -171,8 +171,8 @@ resource "aws_security_group" "ssh" {
 
 
 
-output "web-address" {
-  value = "${aws_instance.web.public_dns}:8080"
+output "elb dns address" {
+  value = "${aws_elb.elb.public_dns}:80"
 }
 output "ssh-public-key" {
   value = aws_key_pair.deployer.public_key
