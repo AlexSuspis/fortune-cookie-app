@@ -67,7 +67,7 @@ jobs:
         run: exit 1
 
       - name: Generate ssh-keygen
-          run: ssh-keygen -b 2048 -t rsa -f ssh-key.pem -q -N ""
+        run: ssh-keygen -b 2048 -t rsa -f ssh-key.pem -q -N ""
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
