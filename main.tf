@@ -60,6 +60,7 @@ resource "aws_launch_template" "app" {
   user_data              = filebase64("ec2-setup.sh")
   vpc_security_group_ids = ["${aws_security_group.instance-and-ssh.id}"]
 }
+
 resource "aws_security_group" "instance-and-ssh" {
   name = "instance-security-group"
   ingress {
