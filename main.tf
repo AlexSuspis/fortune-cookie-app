@@ -85,7 +85,7 @@ resource "aws_launch_template" "app" {
   # }
 }
 resource "aws_security_group" "instance" {
-  name = "instance"
+  name = "instance-security-group"
   ingress {
     from_port   = 8080
     to_port     = 8080
@@ -152,7 +152,7 @@ resource "aws_security_group" "elb" {
 }
 ## Security Group for SSH connection
 resource "aws_security_group" "ssh" {
-  name = ""
+  name = "ssh-security-group"
   egress {
     from_port   = 0
     to_port     = 0
