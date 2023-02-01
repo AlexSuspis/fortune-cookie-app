@@ -68,10 +68,9 @@ resource "aws_instance" "web" {
   user_data = <<-EOF
                 #!/bin/bash
                 apt-get update
-                apt-get install -y curl
-                curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-                mkdir fortune-cookie-app && cd fortune-cookie-app
-                scp -i ssh-key.pem package.json root@${aws_instance.web.public_dns}:/
+                apt-get install -y git
+                git clone https://github.com/AlexSuspis/fortune-cookie-app.git
+                cd fortune-cookie-app
                 npm install
                 node app.js
                 EOF
