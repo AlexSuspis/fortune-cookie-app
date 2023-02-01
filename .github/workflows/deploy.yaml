@@ -68,7 +68,7 @@ jobs:
 
       - name: Generate ssh-keygen
         run: |
-          rm ./ssh-key.pem*
+          find . -maxdepth 1 -type f -name "ssh-key" | xargs rm
           ssh-keygen -b 2048 -t rsa -f ssh-key.pem -q -N ""
 
       - name: Terraform Apply
