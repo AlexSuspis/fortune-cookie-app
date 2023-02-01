@@ -67,7 +67,7 @@ resource "aws_launch_template" "app" {
   image_id               = data.aws_ami.ubuntu.id
   instance_type          = "t2.micro"
   key_name               = aws_key_pair.generated-key.key_name
-  user_data              = filebase64("./ec2-setup.sh")
+  user_data              = filebase64("ec2-setup.sh")
   vpc_security_group_ids = ["${aws_security_group.instance.id}", "${aws_security_group.ssh.id}"]
 
   # provisioner "remote-exec" {
@@ -87,8 +87,8 @@ resource "aws_launch_template" "app" {
 resource "aws_security_group" "instance" {
   name = "instance-security-group"
   ingress {
-    from_port   = 8080
-    to_port     = 8080
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -125,12 +125,12 @@ resource "aws_elb" "elb" {
     unhealthy_threshold = 2
     timeout             = 3
     interval            = 30
-    target              = "HTTP:8080/"
+    target              = "HTTP:80/"
   }
   listener {
-    lb_port           = 80
+    lb_port           = 8080
     lb_protocol       = "http"
-    instance_port     = 8080
+    instance_port     = 80
     instance_protocol = "http"
   }
 }
@@ -144,8 +144,8 @@ resource "aws_security_group" "elb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    from_port   = 80
-    to_port     = 8080
+    from_port   = 8080
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -168,7 +168,7 @@ resource "aws_security_group" "ssh" {
 }
 
 output "elb_public_dns" {
-  value = "${aws_elb.elb.dns_name}:80"
+  value = "${aws_elb.elb.dns_name}:8080"
 }
 output "elb_instances" {
   value = aws_elb.elb.instances
