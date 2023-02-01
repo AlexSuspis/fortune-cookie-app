@@ -172,7 +172,10 @@ resource "aws_security_group" "ssh" {
 
 
 output "elb_public_dns" {
-  value = "${aws_elb.elb.public_dns}:80"
+  value = "${aws_elb.elb.dns_name}:80"
+}
+output "elb_instances" {
+  value = aws_elb.elb.instances
 }
 output "ssh-public-key" {
   value = aws_key_pair.deployer.public_key
