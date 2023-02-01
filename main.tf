@@ -87,8 +87,8 @@ resource "aws_launch_template" "app" {
 resource "aws_security_group" "instance" {
   name = "instance-security-group"
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 8080
+    to_port     = 8080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -130,7 +130,7 @@ resource "aws_elb" "elb" {
   listener {
     lb_port           = 80
     lb_protocol       = "http"
-    instance_port     = "8080"
+    instance_port     = 8080
     instance_protocol = "http"
   }
 }
