@@ -115,24 +115,24 @@ resource "aws_autoscaling_group" "example" {
     id      = aws_launch_template.app.id
     version = "$Latest"
   }
-  ### Creating ELB
-  resource "aws_elb" "elb" {
-    name               = "elb"
-    security_groups    = ["${aws_security_group.elb.id}", "${aws_security_group.ssh.id}"]
-    availability_zones = data.aws_availability_zones.available.names
-    health_check {
-      healthy_threshold   = 2
-      unhealthy_threshold = 2
-      timeout             = 3
-      interval            = 30
-      target              = "HTTP:8080/"
-    }
-    listener {
-      lb_port           = 80
-      lb_protocol       = "http"
-      instance_port     = "8080"
-      instance_protocol = "http"
-    }
+}
+### Creating ELB
+resource "aws_elb" "elb" {
+  name               = "elb"
+  security_groups    = ["${aws_security_group.elb.id}", "${aws_security_group.ssh.id}"]
+  availability_zones = data.aws_availability_zones.available.names
+  health_check {
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 3
+    interval            = 30
+    target              = "HTTP:8080/"
+  }
+  listener {
+    lb_port           = 80
+    lb_protocol       = "http"
+    instance_port     = "8080"
+    instance_protocol = "http"
   }
 }
 ## Security Group for ELB
