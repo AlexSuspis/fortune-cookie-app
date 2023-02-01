@@ -54,30 +54,30 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-resource "aws_instance" "web" {
-  ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t2.micro"
-  key_name               = aws_key_pair.deployer.key_name
-  vpc_security_group_ids = [aws_security_group.web-sg.id]
-}
+# resource "aws_instance" "web" {
+#   ami                    = data.aws_ami.ubuntu.id
+#   instance_type          = "t2.micro"
+#   key_name               = aws_key_pair.deployer.key_name
+#   vpc_security_group_ids = [aws_security_group.web-instance.id]
+# }
 
 
-resource "aws_security_group" "web-sg" {
-  name = "${random_pet.sg.id}-sg"
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  // connectivity to ubuntu mirrors is required to run `apt-get update` and `apt-get install apache2`
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
+# resource "aws_security_group" "web-instance" {
+#   name = "web-instance"
+#   ingress {
+#     from_port   = 8080
+#     to_port     = 8080
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+#   // connectivity to ubuntu mirrors is required to run `apt-get update` and `apt-get install apache2`
+#   egress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+# }
 
 resource "aws_launch_template" "app" {
   name_prefix   = "app"
@@ -87,19 +87,19 @@ resource "aws_launch_template" "app" {
   user_data     = filebase64("./ec2-setup.sh")
 
 
-  provisioner "remote-exec" {
-    inline = [
-      "touch hello.txt",
-      "echo helloworld remote provisioner >> hello.txt",
-    ]
-  }
-  connection {
-    type        = "ssh"
-    host        = aws_instance.web.public_ip
-    user        = "ubuntu"
-    private_key = file(var.ssh-private-key-path)
-    timeout     = "4m"
-  }
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "touch hello.txt",
+  #     "echo helloworld remote provisioner >> hello.txt",
+  #   ]
+  # }
+  # connection {
+  #   type        = "ssh"
+  #   host        = aws_instance.web.public_ip
+  #   user        = "ubuntu"
+  #   private_key = file(var.ssh-private-key-path)
+  #   timeout     = "4m"
+  # }
 }
 
 
@@ -109,15 +109,35 @@ resource "aws_autoscaling_group" "example" {
   desired_capacity   = 1
   min_size           = 1
   max_size           = 5
-  load_balancers     = ["${aws_elb.example.id}"]
+  load_balancers     = ["${aws_elb.elb.id}"]
   #   target_group_arns  = ["${resource.aws_elb.target_group_arn}"]
   launch_template {
     id      = aws_launch_template.app.id
     version = "$Latest"
   }
-} ## Security Group for ELB
+  ### Creating ELB
+  resource "aws_elb" "elb" {
+    name               = "elb"
+    security_groups    = ["${aws_security_group.elb.id}", "${aws_security_group.ssh.id}"]
+    availability_zones = data.aws_availability_zones.available.names
+    health_check {
+      healthy_threshold   = 2
+      unhealthy_threshold = 2
+      timeout             = 3
+      interval            = 30
+      target              = "HTTP:8080/"
+    }
+    listener {
+      lb_port           = 80
+      lb_protocol       = "http"
+      instance_port     = "8080"
+      instance_protocol = "http"
+    }
+  }
+}
+## Security Group for ELB
 resource "aws_security_group" "elb" {
-  name = "terraform-example-elb"
+  name = "elb_security_group"
   egress {
     from_port   = 0
     to_port     = 0
@@ -130,23 +150,21 @@ resource "aws_security_group" "elb" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-} ### Creating ELB
-resource "aws_elb" "example" {
-  name               = "terraform-asg-example"
-  security_groups    = ["${aws_security_group.elb.id}"]
-  availability_zones = data.aws_availability_zones.available.names
-  health_check {
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 3
-    interval            = 30
-    target              = "HTTP:8080/"
+}
+## Security Group for SSH connection
+resource "aws_security_group" "ssh" {
+  name = ""
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
-  listener {
-    lb_port           = 80
-    lb_protocol       = "http"
-    instance_port     = "8080"
-    instance_protocol = "http"
+  ingress {
+    from_port   = 20
+    to_port     = 20
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
