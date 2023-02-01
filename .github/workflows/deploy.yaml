@@ -67,7 +67,7 @@ jobs:
         run: exit 1
 
       - name: Generate ssh-keygen
-          run: rm ssh-key.pem*
+          # run: rm ssh-key.pem*
           run: ssh-keygen -b 2048 -t rsa -f ssh-key.pem -q -N ""
 
       - name: Terraform Apply
