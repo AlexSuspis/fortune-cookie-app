@@ -177,5 +177,6 @@ output "ssh-public-key" {
   value = aws_key_pair.generated-key.public_key
 }
 output "ssh-private-key" {
-  value = tls_private_key.key.private_key_pem
+  value     = tls_private_key.key.private_key_pem
+  sensitive = true
 }
