@@ -171,7 +171,7 @@ resource "aws_security_group" "ssh" {
 
 
 
-output "elb dns address" {
+output "elb_public_dns" {
   value = "${aws_elb.elb.public_dns}:80"
 }
 output "ssh-public-key" {
