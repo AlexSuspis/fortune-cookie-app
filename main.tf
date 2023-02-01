@@ -97,7 +97,7 @@ resource "aws_launch_template" "app" {
     type        = "ssh"
     host        = aws_instance.web.public_ip
     user        = "ubuntu"
-    private_key = file("./")
+    private_key = file(var.ssh-private-key-path)
     timeout     = "4m"
   }
 }
