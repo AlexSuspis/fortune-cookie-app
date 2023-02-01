@@ -68,9 +68,9 @@ jobs:
 
       - name: Generate ssh-keygen
         run: |
-          find . -maxdepth 1 -type f -name "ssh-key" | if [$(wc -c) -gt 0]; then xargs rm; fi
           ssh-keygen -b 2048 -t rsa -f ssh-key.pem -q -N ""
 
+# find . -maxdepth 1 -type f -name "ssh-key" | if [$(wc -c) -gt 0]; then xargs rm; fi
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false -var "ssh-public-key-path=./ssh-key.pem.pub"
