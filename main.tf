@@ -27,6 +27,11 @@ provider "aws" {
 data "aws_availability_zones" "available" {}
 resource "random_pet" "sg" {}
 
+resource "aws_key_pair" "deployer" {
+  key_name   = "deployer-key"
+  public_key = file(var.ssh-public-key-path)
+}
+
 data "aws_ami" "ubuntu" {
   most_recent = true
 
@@ -49,14 +54,25 @@ resource "aws_instance" "web" {
   #   key_name               = aws_key_pair.generated_key.key_name
   vpc_security_group_ids = [aws_security_group.web-sg.id]
 
-  user_data = <<-EOF
-                #!/bin/bash
-                apt-get update
-                apt-get install -y apache2
-                sed -i -e 's/80/8080/' /etc/apache2/ports.conf
-                echo "<h1>Fortune cookie app coming soon!</h1>" > /var/www/html/index.html
-                systemctl restart apache2
-                EOF
+  # user_data = <<-EOF
+  #               #!/bin/bash
+  #               apt-get update
+  #               apt-get install -y apache2
+  #               sed -i -e 's/80/8080/' /etc/apache2/ports.conf
+  #               echo "<h1>Fortune cookie app coming soon!</h1>" > /var/www/html/index.html
+  #               systemctl restart apache2
+  #               EOF
+  # user_data = <<-EOF
+  #               #!/bin/bash
+  #               apt-get update
+  #               apt-get install -y git
+  #               git clone https://github.com/AlexSuspis/fortune-cookie-app.git
+  #               apt-get install -y curl
+  #               curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash 
+  #               source ~/.bashrc
+  #               cd fortune-cookie-app
+  #               node app.js
+  #               EOF
 }
 
 
@@ -137,4 +153,7 @@ resource "aws_elb" "example" {
 
 output "web-address" {
   value = "${aws_instance.web.public_dns}:8080"
+}
+output "ssh-public-key" {
+  value = aws_key_pair.deployer.public_key
 }
