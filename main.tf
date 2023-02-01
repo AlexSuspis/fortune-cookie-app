@@ -58,13 +58,19 @@ resource "aws_launch_template" "app" {
   instance_type          = "t2.micro"
   key_name               = aws_key_pair.generated-key.key_name
   user_data              = filebase64("ec2-setup.sh")
-  vpc_security_group_ids = ["${aws_security_group.instance.id}"]
+  vpc_security_group_ids = ["${aws_security_group.instance-and-ssh.id}"]
 }
-resource "aws_security_group" "instance" {
+resource "aws_security_group" "instance-and-ssh" {
   name = "instance-security-group"
   ingress {
     from_port   = 80
     to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 22
+    to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -94,7 +100,7 @@ resource "aws_autoscaling_group" "example" {
 ### Creating ELB
 resource "aws_elb" "elb" {
   name               = "elb"
-  security_groups    = ["${aws_security_group.elb-ssh.id}"]
+  security_groups    = ["${aws_security_group.elb.id}"]
   availability_zones = data.aws_availability_zones.available.names
   health_check {
     healthy_threshold   = 2
@@ -110,19 +116,13 @@ resource "aws_elb" "elb" {
     instance_protocol = "http"
   }
 }
-## Security Group for ELB + SSH connection
-resource "aws_security_group" "elb-ssh" {
+## Security Group for ELB 
+resource "aws_security_group" "elb" {
   name = "elb_security_group"
   ingress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
   egress {
