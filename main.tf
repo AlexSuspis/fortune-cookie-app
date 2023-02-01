@@ -58,34 +58,19 @@ data "aws_ami" "ubuntu" {
 #   ami                    = data.aws_ami.ubuntu.id
 #   instance_type          = "t2.micro"
 #   key_name               = aws_key_pair.deployer.key_name
-#   vpc_security_group_ids = [aws_security_group.web-instance.id]
+#   vpc_security_group_ids = [aws_security_group.instance.id]
 # }
 
 
-# resource "aws_security_group" "web-instance" {
-#   name = "web-instance"
-#   ingress {
-#     from_port   = 8080
-#     to_port     = 8080
-#     protocol    = "tcp"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
-#   // connectivity to ubuntu mirrors is required to run `apt-get update` and `apt-get install apache2`
-#   egress {
-#     from_port   = 0
-#     to_port     = 0
-#     protocol    = "-1"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
-# }
+
 
 resource "aws_launch_template" "app" {
-  name_prefix   = "app"
-  image_id      = data.aws_ami.ubuntu.id
-  instance_type = "t2.micro"
-  key_name      = aws_key_pair.deployer.key_name
-  user_data     = filebase64("./ec2-setup.sh")
-
+  name_prefix            = "app"
+  image_id               = data.aws_ami.ubuntu.id
+  instance_type          = "t2.micro"
+  key_name               = aws_key_pair.deployer.key_name
+  user_data              = filebase64("./ec2-setup.sh")
+  vpc_security_group_ids = ["${aws_security_group.instance.id}"]
 
   # provisioner "remote-exec" {
   #   inline = [
@@ -101,12 +86,28 @@ resource "aws_launch_template" "app" {
   #   timeout     = "4m"
   # }
 }
+resource "aws_security_group" "instance" {
+  name = "web-instance"
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  // connectivity to ubuntu mirrors is required to run `apt-get update` and `apt-get install apache2`
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 
 
 ## Creating AutoScaling Group
 resource "aws_autoscaling_group" "example" {
   availability_zones = data.aws_availability_zones.available.names
-  desired_capacity   = 1
+  desired_capacity   = 2
   min_size           = 1
   max_size           = 5
   load_balancers     = ["${aws_elb.elb.id}"]
