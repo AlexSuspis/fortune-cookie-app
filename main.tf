@@ -33,9 +33,15 @@ variable "ssh-private-key-path" {
 data "aws_availability_zones" "available" {}
 resource "random_pet" "sg" {}
 
-resource "aws_key_pair" "deployer" {
-  key_name   = "deployer-key"
-  public_key = file(var.ssh-public-key-path)
+
+resource "tls_private_key" "key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "generated-key" {
+  key_name   = "key"
+  public_key = tls_private_key.key.public_key_openssh
 }
 
 data "aws_ami" "ubuntu" {
@@ -68,7 +74,7 @@ resource "aws_launch_template" "app" {
   name_prefix            = "app"
   image_id               = data.aws_ami.ubuntu.id
   instance_type          = "t2.micro"
-  key_name               = aws_key_pair.deployer.key_name
+  key_name               = aws_key_pair.generated-key.key_name
   user_data              = filebase64("./ec2-setup.sh")
   vpc_security_group_ids = ["${aws_security_group.instance.id}"]
 
@@ -169,9 +175,6 @@ resource "aws_security_group" "ssh" {
   }
 }
 
-
-
-
 output "elb_public_dns" {
   value = "${aws_elb.elb.dns_name}:80"
 }
@@ -179,8 +182,8 @@ output "elb_instances" {
   value = aws_elb.elb.instances
 }
 output "ssh-public-key" {
-  value = aws_key_pair.deployer.public_key
+  value = aws_key_pair.generated-key.public_key
 }
 output "ssh-private-key" {
-  value = file(var.ssh-private-key-path)
+  value = tls_private_key.key.private_key_pem
 }
