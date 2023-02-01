@@ -27,6 +27,9 @@ provider "aws" {
 variable "ssh-public-key-path" {
   type = string
 }
+variable "ssh-private-key-path" {
+  type = string
+}
 data "aws_availability_zones" "available" {}
 resource "random_pet" "sg" {}
 
@@ -82,6 +85,21 @@ resource "aws_launch_template" "app" {
   instance_type = "t2.micro"
   key_name      = aws_key_pair.deployer.key_name
   user_data     = filebase64("./ec2-setup.sh")
+
+
+  provisioner "remote-exec" {
+    inline = [
+      "touch hello.txt",
+      "echo helloworld remote provisioner >> hello.txt",
+    ]
+  }
+  connection {
+    type        = "ssh"
+    host        = self.public_ip
+    user        = "ubuntu"
+    private_key = file("./")
+    timeout     = "4m"
+  }
 }
 
 
@@ -140,4 +158,7 @@ output "web-address" {
 }
 output "ssh-public-key" {
   value = aws_key_pair.deployer.public_key
+}
+output "ssh-private-key" {
+  value = file(var.ssh-private-key-path)
 }

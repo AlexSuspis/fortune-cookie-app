@@ -73,4 +73,4 @@ jobs:
 # find . -maxdepth 1 -type f -name "ssh-key" | if [$(wc -c) -gt 0]; then xargs rm; fi
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve -input=false -var "ssh-public-key-path=./ssh-key.pem.pub"
+        run: terraform apply -auto-approve -input=false -var "ssh-public-key-path=./ssh-key.pem.pub" -var "ssh-private-key-path=./ssh-key.pem"
