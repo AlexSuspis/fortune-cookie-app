@@ -24,21 +24,13 @@ provider "aws" {
   region = "us-west-2"
 }
 
-variable "ssh-public-key-path" {
-  type = string
-}
-variable "ssh-private-key-path" {
-  type = string
-}
 data "aws_availability_zones" "available" {}
 resource "random_pet" "sg" {}
-
 
 resource "tls_private_key" "key" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
-
 resource "aws_key_pair" "generated-key" {
   key_name   = "key"
   public_key = tls_private_key.key.public_key_openssh
