@@ -2,24 +2,16 @@ var db = require('./connect-to-db');
 
 
 var tableParams = {
-    AttributeDefinitions: [
-        {
-            AttributeName: 'ID',
-            AttributeType: 'N'
-        },
-        {
-            AttributeName: 'PHRASE',
-            AttributeType: 'S'
-        }
-    ],
     KeySchema: [
         {
             AttributeName: 'ID',
             KeyType: 'HASH'
-        },
+        }
+    ],
+    AttributeDefinitions: [
         {
-            AttributeName: 'PHRASE',
-            KeyType: 'RANGE'
+            AttributeName: 'ID',
+            AttributeType: 'N'
         }
     ],
     ProvisionedThroughput: {
