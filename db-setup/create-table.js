@@ -5,7 +5,7 @@ var tableParams = {
     AttributeDefinitions: [
         {
             AttributeName: 'ID',
-            AttributeType: 'N'
+            AttributeType: 'S'
         },
         {
             AttributeName: 'PHRASE',
