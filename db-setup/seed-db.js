@@ -9,11 +9,11 @@ var clearTable = async () => {
 
 //add all items to table
 var populateTable = async () => {
-    await phrases.forEach(phrase => {
+    await phrases.forEach((phrase, index) => {
         var params = {
             TableName: "fortune-cookie-table",
             Item: {
-                "ID": { S: uuidv4() },
+                "ID": { N: String(index) },
                 "PHRASE": { S: phrase }
             }
         }
