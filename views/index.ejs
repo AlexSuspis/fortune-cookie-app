@@ -9,8 +9,37 @@
 </head>
 
 <body>
+    <script>
+        async function displayFortuneCookiePhrase() {
+
+            //fetch fortune cookie phrase from API endpoint
+            await fetch('http://localhost:3000/fortune-cookie', {
+                method: "GET",
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                //display phrase by manipulating DOM, after fetch response is received
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.phrase)
+                    var phrase_display = document.getElementById("phrase-display");
+                    phrase_display.innerHTML = data.phrase
+                })
+                .catch(err => alert("Error: something went wrong: ", err))
+        }
+
+    </script>
+
     <h1>Fortune cookie app coming soon.</h1>
     <p>This is a partial view served by our Express server.</p>
+
+    <button onclick="displayFortuneCookiePhrase()">Get fortune cookie</button>
+    <p id="phrase-display"></p>
+
+    <form action="POST"></form>
+
 </body>
 
 </html>

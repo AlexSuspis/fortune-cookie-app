@@ -16,6 +16,7 @@ app.get("/", (req, res) => {
 app.get("/fortune-cookie", (req, res) => {
     //access db and get random item from table
     //send phrase as string to client along with status code 200
+    res.send({ "phrase": 'This is a test phrase' });
 });
 app.post("/fortune-cookie", (req, res) => {
     //insert item into table
