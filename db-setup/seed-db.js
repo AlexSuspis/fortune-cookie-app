@@ -11,7 +11,7 @@ var clearTable = async () => {
 var populateTable = async () => {
     await phrases.forEach((phrase, index) => {
         var params = {
-            TableName: "fortune-cookie-table",
+            TableName: db.TABLE_NAME,
             Item: {
                 "ID": { N: String(index) },
                 "PHRASE": { S: phrase }

@@ -2,7 +2,7 @@ var db = require('./connect-to-db');
 
 //remove previous, if any, tables called fortune-cookie-table
 params = {
-    TableName: 'fortune-cookie-table'
+    TableName: db.TABLE_NAME
 }
 db.deleteTable(params, (err, data) => {
     if (err && err.code === 'ResourceNotFoundException') {

@@ -26,7 +26,7 @@ var tableParams = {
         ReadCapacityUnits: 1,
         WriteCapacityUnits: 1
     },
-    TableName: 'fortune-cookie-table',
+    TableName: db.TABLE_NAME,
     StreamSpecification: {
         StreamEnabled: false
     }

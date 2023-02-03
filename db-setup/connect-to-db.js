@@ -6,5 +6,6 @@ AWS.config.credentials = credentials;
 AWS.config.update({ region: 'us-west-2' })
 
 var db = new AWS.DynamoDB();
+db.TABLE_NAME = "fortune-cookie-table";
 
 module.exports = db;
