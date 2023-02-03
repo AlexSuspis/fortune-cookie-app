@@ -6,8 +6,11 @@ const PORT = 3000;
 //connect to DynamoDB fortunie-cookie-table
 
 
+//set view engine to EJS so we can serve partials to client
+app.set("view engine", "ejs");
+
 app.get("/", (req, res) => {
-    res.send("Hello World from Express app!");
+    res.render("index");
 });
 
 app.get("/fortune-cookie", (req, res) => {
