@@ -3,9 +3,21 @@ const express = require('express');
 const app = express();
 const PORT = 3000;
 
-app.get("/home", (req, res) => {
+//connect to DynamoDB fortunie-cookie-table
+
+
+app.get("/", (req, res) => {
     res.send("Hello World from Express app!");
-})
+});
+
+app.get("/fortune-cookie", (req, res) => {
+    //access db and get random item from table
+    //send phrase as string to client along with status code 200
+});
+app.post("/fortune-cookie", (req, res) => {
+    //insert item into table
+    //send phrase as string to client along with status code 200
+});
 
 app.listen(PORT, (error) => {
     if (!error)
