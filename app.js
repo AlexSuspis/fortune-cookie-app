@@ -23,7 +23,6 @@ app.get("/fortune-cookie", async (req, res) => {
     const response = await db.scan(params).promise();
     const count = response.Count
 
-
     //pick random index between 0 and n-1
     var random_index = Math.floor(Math.random() * count)
     console.log(random_index)
@@ -33,15 +32,11 @@ app.get("/fortune-cookie", async (req, res) => {
         TableName: db.TABLE_NAME,
         Key: { "ID": { N: String(random_index) } }
     }
+    //query database and return result to user
     await db.getItem(params).promise()
         .then(response => response.Item.PHRASE.S)
         .then(phrase => res.send({ "phrase": phrase }))
         .catch(err => res.error("error occurred:", err))
-
-    // console.log(phrase)
-
-    //send phrase as string to client along with status code 200
-    // res.send({ "phrase": 'This is a test phrase' });
 });
 app.post("/fortune-cookie", (req, res) => {
     //insert item into table
