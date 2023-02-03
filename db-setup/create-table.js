@@ -4,21 +4,21 @@ var db = require('./connect-to-db');
 var tableParams = {
     AttributeDefinitions: [
         {
-            AttributeName: 'COOKIE_ID',
+            AttributeName: 'ID',
             AttributeType: 'N'
         },
         {
-            AttributeName: 'COOKIE_SENTENCE',
+            AttributeName: 'PHRASE',
             AttributeType: 'S'
         }
     ],
     KeySchema: [
         {
-            AttributeName: 'COOKIE_ID',
+            AttributeName: 'ID',
             KeyType: 'HASH'
         },
         {
-            AttributeName: 'COOKIE_SENTENCE',
+            AttributeName: 'PHRASE',
             KeyType: 'RANGE'
         }
     ],
