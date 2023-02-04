@@ -29,6 +29,28 @@
                 })
                 .catch(err => alert("Error: something went wrong: ", err))
         }
+        async function postFortuneCookiePhrase(e) {
+            e.preventDefault();
+            var phrase = document.getElementById("phrase-input").value;
+            console.log(phrase)
+
+            //POST fortune cookie phrase to API endpoint
+            await fetch(`http://localhost:3000/fortune-cookie?phrase=${phrase}`, {
+                method: "POST",
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+            })
+                //display phrase by manipulating DOM, after fetch response is received
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.result)
+                    var phrase_display = document.getElementById("post-phrase-feedback");
+                    phrase_display.innerHTML = data.result
+                })
+                .catch(err => alert("Error: something went wrong: ", err))
+        }
 
     </script>
 
@@ -37,7 +59,13 @@
     <button onclick="displayFortuneCookiePhrase()">Get fortune cookie</button>
     <p id="phrase-display"></p>
 
-    <form action="POST"></form>
+    <form method="POST">
+        <label for="phrase-input">Phrase to send:</label>
+        <input type="text" id="phrase-input" name="phrase">
+        <!-- <button onclick="postFortuneCookiePhrase()">Send phrase</button> -->
+        <input type="submit" onclick="postFortuneCookiePhrase(event)" value="Send phrase">
+    </form>
+    <p id="post-phrase-feedback"></p>
 
 </body>
 
