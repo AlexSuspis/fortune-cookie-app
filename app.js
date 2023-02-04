@@ -42,29 +42,34 @@ app.get("/fortune-cookie", async (req, res) => {
 app.post("/fortune-cookie", async (req, res) => {
     var phrase = req.query.phrase;
 
-    //get total number of records in database n
-    // params = {
-    //     TableName: db.TABLE_NAME,
-    //     Select: "COUNT"
-    // }
-    // const response = await db.scan(params).promise();
-    // const index = response.Count
-    // //insert item into table with key/index equal to total count of items on table
-    // var params = {
-    //     TableName: db.TABLE_NAME,
-    //     Item: {
-    //         "ID": { N: String(index) },
-    //         "PHRASE": { S: phrase }
-    //     }
-    // }
-    // console.log(params)
+    // get total number of records in database n
+    params = {
+        TableName: db.TABLE_NAME,
+        Select: "COUNT"
+    }
+    const response = await db.scan(params).promise();
+    const index = response.Count
+    //insert item into table with key/index equal to total count of items on table
+    var params = {
+        TableName: db.TABLE_NAME,
+        Item: {
+            "ID": { N: String(index) },
+            "PHRASE": { S: phrase }
+        }
+    }
+    console.log(params)
 
-    // db.putItem(params, (err, data) => {
-    //     if (err) console.log("Error while adding item to database.", err)
-    //     else if (data) console.log("Success, item added to database.", data)
-    // });
-    //send phrase as string to client along with status code 200
-    res.send({ "result": "phrase received :)" });
+    //Add phrase to DB. Notify user of result
+    db.putItem(params, (err, data) => {
+        if (err) {
+            console.log("Error while adding item to database.", err)
+            res.send({ "result": "Error adding phrase added to database" });
+        }
+        else if (data) {
+            console.log("Success, item added to database.", data)
+            res.send({ "result": `Fortune cookie phrase "${phrase}" added to database.` });
+        }
+    });
 });
 
 app.listen(PORT, (error) => {
