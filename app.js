@@ -2,7 +2,7 @@ const { DocDB } = require('aws-sdk');
 const express = require('express');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 //connect to DynamoDB fortune-cookie-table
 var db = require('./db-setup/connect-to-db');
