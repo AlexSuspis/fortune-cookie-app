@@ -9,6 +9,13 @@ const PORT = process.env.PORT || 3000;
 var db = require('./db-setup/connect-to-db');
 
 app.use(cors());
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*')
+    res.header('Access-Control-Allow-Credentials', true)
+    res.header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+    next();
+});
 
 //set view engine to EJS so we can serve partials to client
 app.set("view engine", "ejs");
