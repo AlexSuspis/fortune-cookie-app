@@ -1,11 +1,14 @@
 const { DocDB } = require('aws-sdk');
 const express = require('express');
+var cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 //connect to DynamoDB fortune-cookie-table
 var db = require('./db-setup/connect-to-db');
+
+app.use(cors());
 
 //set view engine to EJS so we can serve partials to client
 app.set("view engine", "ejs");
