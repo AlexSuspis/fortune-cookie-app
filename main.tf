@@ -1,7 +1,7 @@
 provider "aws" {
   region = "us-west-2"
   # profile                  = "default"
-  shared_credentials_file = ["/Users/alex/.aws/credentials"]
+  shared_credentials_file = "/Users/alex/.aws/credentials"
 }
 
 resource "aws_elastic_beanstalk_application" "fortune_cookie_app" {
