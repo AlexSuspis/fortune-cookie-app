@@ -9,7 +9,7 @@ terraform {
 provider "aws" {
   region                  = "eu-west-2"
   profile                 = "new"
-  shared_credentials_file = "/Users/alex/.aws/credentials"
+  shared_credentials_file = "$HOME/.aws/credentials"
 }
 
 resource "aws_elastic_beanstalk_application" "fortune_cookie_app" {
