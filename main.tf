@@ -1,5 +1,6 @@
 provider "aws" {
-  region = "us-west-2"
+  region  = "us-west-2"
+  profile = "default"
 }
 
 resource "aws_elastic_beanstalk_application" "fortune_cookie_app" {
