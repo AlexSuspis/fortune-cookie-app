@@ -4,7 +4,8 @@
   "description": "A simple containerized web app integrating a CI/CD pipeline in Github Actions, automated deployment to AWS EC2, and perhaps even a little bit of terraforming :)",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "node app.js",
+    "run": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
