@@ -13,7 +13,7 @@
         async function displayFortuneCookiePhrase() {
 
             //fetch fortune cookie phrase from API endpoint
-            await fetch('http://localhost:3000/fortune-cookie', {
+            await fetch(`http://localhost:<%=port%>/fortune-cookie`, {
                 method: "GET",
                 mode: 'cors',
                 headers: {
@@ -35,7 +35,7 @@
             console.log(phrase)
 
             //POST fortune cookie phrase to API endpoint
-            await fetch(`http://localhost:3000/fortune-cookie?phrase=${phrase}`, {
+            await fetch(`http://localhost:<%=port%>/fortune-cookie?phrase=${phrase}`, {
                 method: "POST",
                 mode: 'cors',
                 headers: {
