@@ -7,6 +7,7 @@
     "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "proxy": "http://localhost:8080",
   "repository": {
     "type": "git",
     "url": "git+https://alexsuspis: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@github.com/AlexSuspis/fortune-cookie-app.git"
