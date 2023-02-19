@@ -8,8 +8,8 @@ on:
   pull_request:
 
 jobs:
-  terraform:
-    name: "Terraform"
+  setup_terraform_infrastructure:
+    name: "Setup Terraform Infrastructure"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -70,3 +70,15 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false 
+  deploy:
+    needs: [setup_terraform_infrastructure]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Zip code into bundle
+        uses: actions/checkout@v2
+        run: zip -r code-bundle.zip app.js package.json package-lock.json db-setup/
+      - name: Deploy code into ElasticBeanstalk environment
+        run: eb deploy fortune-cookie-app-env 
+
+        
+
