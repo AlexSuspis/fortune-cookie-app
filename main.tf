@@ -20,49 +20,49 @@ provider "aws" {
 }
 
 # Create instance profile
-# resource "aws_iam_instance_profile" "ec2_eb_profile" {
-#   name = "fortune-cookie-app-ec2-profile"
-#   role = aws_iam_role.ec2_role.name
-# }
+resource "aws_iam_instance_profile" "ec2_eb_profile" {
+  name = "fortune-cookie-app-ec2-profile"
+  role = aws_iam_role.ec2_role.name
+}
 
-# resource "aws_iam_role" "ec2_role" {
-#   name               = "fortune-cookie-app-ec2-role"
-#   assume_role_policy = data.aws_iam_policy_document.assume_policy.json
-# }
-# resource "aws_iam_policy_attachment" "ec2_policy_role" {
-#   name  = "ec2_attachment"
-#   roles = [aws_iam_role.ec2_role.name]
+resource "aws_iam_role" "ec2_role" {
+  name               = "fortune-cookie-app-ec2-role"
+  assume_role_policy = data.aws_iam_policy_document.assume_policy.json
+}
+resource "aws_iam_policy_attachment" "ec2_policy_role" {
+  name  = "ec2_attachment"
+  roles = [aws_iam_role.ec2_role.name]
 
-#   policy_arn = aws_iam_policy.ec2_policy.arn
+  policy_arn = aws_iam_policy.ec2_policy.arn
 
-# }
-# data "aws_iam_policy_document" "assume_policy" {
-#   statement {
-#     actions = ["sts:AssumeRole"]
-#     principals {
-#       type        = "Service"
-#       identifiers = ["ec2.amazonaws.com"]
-#     }
-#   }
-# }
+}
+data "aws_iam_policy_document" "assume_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
 
-# resource "aws_iam_policy" "ec2_policy" {
-#   name        = "ec2_policy"
-#   path        = "/"
-#   description = "Policy to provide permission to EC2"
-#   policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Action = [
-#           "ec2:Describe*",
-#         ]
-#         Effect   = "Allow"
-#         Resource = "*"
-#       },
-#     ]
-#   })
-# }
+resource "aws_iam_policy" "ec2_policy" {
+  name        = "ec2_policy"
+  path        = "/"
+  description = "Policy to provide permission to EC2"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ec2:Describe*",
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
+}
 
 
 resource "aws_elastic_beanstalk_application" "fortune_cookie_app" {
@@ -80,16 +80,16 @@ resource "aws_elastic_beanstalk_environment" "fortune_cookie_app_env" {
   #   name      = "InstanceType"
   #   value     = "t2.micro"
   # }
-  setting {
-    namespace = "aws:autoscaling:launchconfiguration"
-    name      = "IamInstanceProfile"
-    value     = "aws-elasticbeanstalk-ec2-role"
-  }
   # setting {
   #   namespace = "aws:autoscaling:launchconfiguration"
   #   name      = "IamInstanceProfile"
-  #   value     = aws_iam_instance_profile.ec2_eb_profile.name
+  #   value     = "aws-elasticbeanstalk-ec2-role"
   # }
+  setting {
+    namespace = "aws:autoscaling:launchconfiguration"
+    name      = "IamInstanceProfile"
+    value     = aws_iam_instance_profile.ec2_eb_profile.name
+  }
   # setting {
   #   namespace = "aws:autoscaling:asg"
   #   name      = "MinSize"
