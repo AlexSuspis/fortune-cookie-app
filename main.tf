@@ -5,11 +5,11 @@ terraform {
     workspaces {
       name = "fortune-cookie-app"
     }
-    required_providers {
-      aws = {
-        source = "hashicorp/aws"
-      }
-    }
+    # required_providers {
+    #   aws = {
+    #     source = "hashicorp/aws"
+    #   }
+    # }
   }
 }
 
